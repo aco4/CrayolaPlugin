@@ -1,0 +1,882 @@
+
+#########################
+#                       #
+# Generic Configuration #
+#                       #
+#########################
+
+# Message sent in chat when a player is blessed. Use '&' for color codes: https://htmlcolorcodes.com/bukkit-color-codes/
+bless-message: "&a&l{player} HAS BEEN BLESSED"
+# Message sent in chat when a player is cursed. Use '&' for color codes: https://htmlcolorcodes.com/bukkit-color-codes/
+curse-message: "&4&l{player} HAS BEEN CURSED"
+
+# All players get a message in chat when someone is blessed/cursed (true)
+# Only the player who was blessed/cursed receives a message in chat (false)
+enable-broadcast: true
+
+# How far upwards the player must look to progress the prayer. (Pitch: 90 is straight down, 0 is horizontal, -90 is straight up)
+upper-angle-threshold: -30
+# How far downwards the player must look to progress the prayer. (Pitch: 90 is straight down, 0 is horizontal, -90 is straight up)
+lower-angle-threshold: 45
+
+# How many times the player must look up/down to complete the prayer
+nods-required: 25
+# How many times the player must look up/down before the statue/altar starts being highlighted
+nod-threshold: 6
+
+# Up to how many blocks of the statue/altar are highlighted during prayer
+prayer-intensity: 20
+# How far blocks can be highlighted during prayer
+prayer-range: 3
+
+
+
+#################################
+#                               #
+# Item Configuration: Mechanics #
+#                               #
+#################################
+
+# Players can pray at an altar / worship a statue by sneaking and looking up and down.
+# Players can drop an item at the structure they are praying at to give an offering.
+#
+# NOTE: If a player offers a stack of items (e.g. 64 stone), only 1 will be consumed (e.g. 63 stone will be left over).
+#
+# Depending on what item the player offers, the god will choose a different action.
+# Will the god bless the player? Or curse them?
+# There are five "actions" the god can choose from:
+#
+#   1. strong-bless
+#   2. weak-bless
+#   3. ignore
+#   4. weak-curse
+#   5. strong-curse
+#
+# Depending on what the god chooses, the player will receive a different reward.
+# Will the player receive a diamond? Or a lightning strike?
+# Below is a list of all "outcomes":
+#
+#   EFFECT
+#     The player will be applied a level I potion effect for 15 seconds.
+#     Must use the IDs here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
+#     Example: EFFECT_POISON
+#
+#   ITEM
+#     An item will be spawned. (Count = 1)
+#     Must use the IDs here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#     Example: ITEM_DIAMOND
+#
+#   ENTITY
+#     A mob will be spawned.
+#     Must use the IDs here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html
+#     Example: ENTITY_ZOMBIE
+#
+#   STRIKE_LIGHTNING
+#     Special keyword
+#     The player will be struck by lightning.
+#
+#   DOUBLE_ITEM
+#     Special keyword
+#     Spawns 2 copies of the item that the player offered.
+#
+#   INCREASE_HEALTH
+#     Special keyword
+#     Permanently increases the player's maximum health by 2 (1 heart).
+#
+#   DECREASE_HEALTH
+#     Special keyword
+#     Permanently decreases the player's maximum health by 2 (1 heart).
+#
+#   BIND_ARMORPIECE
+#     Special keyword
+#     Enchants 1 random armor piece the player is wearing with Curse of Binding.
+
+
+
+#################################
+#                               #
+# Item Configuration: Structure #
+#                               #
+#################################
+
+# The same offer can result in a blessing one time, and a curse another time.
+# It's a high-risk, high-reward game, which makes offering items complex and interesting.
+# This configuration file lets you make your god more punishing, or more generous.
+
+# The configuration file is built of "groups".
+# A group characterizes how a god will react to a group of items.
+#
+# NOTE: If you put an item into multiple groups, a random group will be selected.
+
+
+# Here is the basic configuration file format:
+
+# prayer-result:
+#
+#   <group>:
+#
+#     items:
+#         - <item1>
+#         - <item2>
+#         - ...
+#
+#     actions:
+#       strong-bless:
+#         weight: <number>
+#         outcomes:
+#           - <outcome1>
+#           - <outcome2>
+#           - ...
+#
+#       weak-bless:
+#         weight: <number>
+#         outcomes:
+#           - <outcome1>
+#           - <outcome2>
+#           - ...
+#
+#       ignore:
+#         weight: <number>
+#         outcomes:
+#           - <outcome1>
+#           - <outcome2>
+#           - ...
+#
+#       weak-curse:
+#         weight: <number>
+#         outcomes:
+#           - <outcome1>
+#           - <outcome2>
+#           - ...
+#
+#       strong-curse:
+#         weight: <number>
+#         outcomes:
+#           - <outcome1>
+#           - <outcome2>
+#           - ...
+#
+#   <group>:
+#     ...
+
+
+
+prayer-result:
+
+  group-example: # Example group. Groups can be named anything you want.
+
+    items:
+      - AIR
+      - BEDROCK
+
+    actions:
+      strong-bless:
+        weight: 5 # weight determines how likely an action is chosen instead of the others.
+        outcomes:
+          - ENTITY_PIG # A pig will be spawned.
+          - ITEM_IRON_INGOT # 1 iron ingot will be spawned.
+          - ITEM_IRON_INGOT # Another iron ingot will be spawned. (Total 2)
+          - DOUBLE_ITEM # (Special keyword) 2 identical copies of the item that the player gifted will be spawned.
+
+      weak-bless:
+        weight: 5
+        outcomes:
+          - EFFECT_REGENERATION # The player will be given Regeneration I for 15 seconds.
+          - EFFECT_SPEED # The player will be given Speed I for 15 seconds.
+          - ITEM_CARROT # 1 carrot will be spawned.
+
+      ignore:
+        weight: 75 # ignore has a high weight compared to the other actions, so it is more likely to be selected.
+        outcomes: # outcomes may be left blank
+
+      weak-curse:
+        weight: 15 # TIP: Have all the weights add up to 100.
+        outcomes:
+          - EFFECT_CONFUSION # The player will be given Nausea I for 15 seconds.
+          - STRIKE_LIGHTNING # (Special keyword) The player will be struck by lightning.
+          - DECREASE_HEALTH # (Special keyword) Permanently decreases the player's maximum health by 2 (1 heart).
+
+      strong-curse:
+        weight: 0 # To entirely prevent an action from being selected, set its weight to 0. (Not recommended. Increases predictability.)
+        outcomes:
+
+
+
+  group-ultra-valuable:
+
+    items:
+      - ELYTRA
+      - DRAGON_EGG
+      - ENCHANTED_GOLDEN_APPLE
+
+    actions:
+      strong-bless:
+        weight: 25
+        outcomes:
+          - DOUBLE_ITEM
+          - EFFECT_GLOWING
+          - EFFECT_REGENERATION
+          - EFFECT_RESISTANCE
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+          - EFFECT_STRENGTH
+
+      weak-bless:
+        weight: 70
+        outcomes:
+          - INCREASE_HEALTH
+          - ENTITY_ALLAY
+          - ITEM_DIAMOND_BLOCK
+          - ITEM_NETHERITE_BLOCK
+          - ITEM_TOTEM_OF_UNDYING
+          - EFFECT_GLOWING
+          - EFFECT_REGENERATION
+          - EFFECT_RESISTANCE
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+          - EFFECT_STRENGTH
+
+      ignore:
+        weight: 3
+        outcomes:
+          - ITEM_DIAMOND
+
+      weak-curse:
+        weight: 1
+        outcomes:
+          - EFFECT_BLINDNESS
+          - EFFECT_WITHER
+
+      strong-curse:
+        weight: 1
+        outcomes:
+          - ENTITY_VEX
+          - ENTITY_VEX
+          - ENTITY_VEX
+          - ENTITY_VEX
+
+
+
+  group-very-valuable-non-renewable:
+
+    items:
+      - NETHERITE_BLOCK
+      - NETHERITE_INGOT
+      - LODESTONE
+      - SHULKER_SHELL
+      - DRAGON_HEAD
+      - HEART_OF_THE_SEA
+      - ECHO_SHARD
+      - RECOVERY_COMPASS
+      - GLOBE_BANNER_PATTERN
+
+    actions:
+      strong-bless:
+        weight: 30
+        outcomes:
+          - INCREASE_HEALTH
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+          - EFFECT_GLOWING
+
+      weak-bless:
+        weight: 65
+        outcomes:
+          - ENTITY_ALLAY
+          - ITEM_DIAMOND_BLOCK
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+          - EFFECT_GLOWING
+
+      ignore:
+        weight: 3
+        outcomes:
+          - ITEM_DIAMOND
+
+      weak-curse:
+        weight: 1
+        outcomes:
+          - ENTITY_VEX
+
+      strong-curse:
+        weight: 1
+        outcomes:
+          - ENTITY_VEX
+          - BIND_ARMORPIECE
+          - STRIKE_LIGHTNING
+
+
+
+  group-very-valuable-offer:
+
+    items:
+      - TOTEM_OF_UNDYING
+      - CONDUIT
+      - TRIDENT
+      - WITHER_SKELETON_SKULL
+      - NETHER_STAR
+      - BEACON
+      - NETHERITE_SCRAP
+      - ANCIENT_DEBRIS
+      - DIAMOND_BLOCK
+      - DIAMOND_HORSE_ARMOR
+
+    actions:
+      strong-bless:
+        weight: 25
+        outcomes:
+          - INCREASE_HEALTH
+          - EFFECT_REGENERATION
+          - EFFECT_SPEED
+          - EFFECT_GLOWING
+
+      weak-bless:
+        weight: 50
+        outcomes:
+          - DOUBLE_ITEM
+          - ENTITY_PARROT
+          - ENTITY_PARROT
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+          - EFFECT_GLOWING
+
+      ignore:
+        weight: 10
+        outcomes:
+          - EFFECT_REGENERATION
+          - EFFECT_SPEED
+
+      weak-curse:
+        weight: 10
+        outcomes:
+          - ENTITY_VEX
+          - BIND_ARMORPIECE
+
+      strong-curse:
+        weight: 5
+        outcomes:
+          - ENTITY_VEX
+          - BIND_ARMORPIECE
+          - STRIKE_LIGHTNING
+          - EFFECT_SLOW
+          - EFFECT_BLINDNESS
+
+
+
+  group-valuable-offer:
+
+    items:
+      - DIAMOND
+      - ENCHANTING_TABLE
+      - ENDER_CHEST
+      - SADDLE
+      - NAME_TAG
+      - END_CRYSTAL
+      - DRAGON_BREATH
+      - NAUTILUS_SHELL
+      - BELL
+      - SPYGLASS
+      - SPORE_BLOSSOM
+      - SPONGE
+      - WET_SPONGE
+
+    actions:
+      strong-bless:
+        weight: 25
+        outcomes:
+          - DOUBLE_ITEM
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+          - EFFECT_GLOWING
+
+      weak-bless:
+        weight: 50
+        outcomes:
+          - ENTITY_PARROT
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+          - EFFECT_GLOWING
+
+      ignore:
+        weight: 10
+        outcomes:
+          - ITEM_GOLD_INGOT
+
+      weak-curse:
+        weight: 10
+        outcomes:
+          - EFFECT_CONFUSION
+          - EFFECT_BLINDNESS
+          - EFFECT_SLOW
+          - EFFECT_HUNGER
+
+      strong-curse:
+        weight: 5
+        outcomes:
+          - ENTITY_VEX
+          - ENTITY_VEX
+          - ENTITY_VEX
+          - BIND_ARMORPIECE
+          - EFFECT_BLINDNESS
+          - EFFECT_WITHER
+
+
+
+  group-good-offer:
+
+    items:
+      - BLAZE_POWDER
+      - BLAZE_ROD
+      - BREWING_STAND
+      - CAKE
+      - COOKIE
+      - CRYING_OBSIDIAN
+      - EMERALD_BLOCK
+      - EMERALD_ORE
+      - ENDER_EYE
+      - END_ROD
+      - EXPERIENCE_BOTTLE
+      - GHAST_TEAR
+      - GLOW_INK_SAC
+      - GOAT_HORN
+      - GOLDEN_APPLE
+      - GOLDEN_HORSE_ARMOR
+      - GOLD_BLOCK
+      - HONEYCOMB
+      - HONEYCOMB_BLOCK
+      - HONEY_BLOCK
+      - HONEY_BOTTLE
+      - IRON_HORSE_ARMOR
+      - IRON_BLOCK
+      - LAPIS_BLOCK
+      - LEATHER_HORSE_ARMOR
+      - NETHER_WART
+      - OBSIDIAN
+      - PUMPKIN_PIE
+      - QUARTZ_BLOCK
+      - SCUTE
+      - SPECTRAL_ARROW
+      - TURTLE_EGG
+      - WITHER_ROSE
+
+    actions:
+      strong-bless:
+        weight: 5
+        outcomes:
+          - INCREASE_HEALTH
+          - EFFECT_REGENERATION
+          - EFFECT_SPEED
+
+      weak-bless:
+        weight: 35
+        outcomes:
+          - ITEM_DIAMOND
+
+      ignore:
+        weight: 20
+        outcomes:
+          - EFFECT_REGENERATION
+          - EFFECT_SPEED
+
+      weak-curse:
+        weight: 20
+        outcomes:
+          - ENTITY_VEX
+          - ENTITY_VEX
+          - ENTITY_VEX
+
+      strong-curse:
+        weight: 10
+        outcomes:
+          - DECREASE_HEALTH
+          - BIND_ARMORPIECE
+          - STRIKE_LIGHTNING
+          - EFFECT_CONFUSION
+          - EFFECT_HUNGER
+          - EFFECT_SLOW
+          - EFFECT_WITHER
+
+
+
+  group-okay-offer:
+
+    items:
+      - BREAD
+      - COOKED_BEEF
+      - COOKED_CHICKEN
+      - COOKED_PORKCHOP
+      - COOKED_MUTTON
+      - COOKED_RABBIT
+      - COOKED_SALMON
+      - COOKED_COD
+      - EMERALD
+      - PAINTING
+      - BAKED_POTATO
+      - LANTERN
+      - RABBIT_STEW
+      - MUSHROOM_STEW
+      - QUARTZ
+      - PUMPKIN
+      - PRISMARINE
+      - JACK_O_LANTERN
+      - BOOKSHELF
+      - SLIME_BLOCK
+      - SEA_LANTERN
+      - IRON_INGOT
+      - GOLD_INGOT
+      - LAPIS_LAZULI
+      - GOLDEN_CARROT
+      - COAL_BLOCK
+
+    actions:
+      strong-bless:
+        weight: 10
+        outcomes:
+          - ITEM_DIAMOND
+
+      weak-bless:
+        weight: 30
+        outcomes:
+          - DOUBLE_ITEM
+          - EFFECT_REGENERATION
+          - EFFECT_SPEED
+
+      ignore:
+        weight: 25
+        outcomes:
+          - EFFECT_SPEED
+
+      weak-curse:
+        weight: 25
+        outcomes:
+          - ENTITY_ZOMBIE
+          - EFFECT_CONFUSION
+          - EFFECT_BLINDNESS
+          - EFFECT_HUNGER
+
+      strong-curse:
+        weight: 10
+        outcomes:
+          - DECREASE_HEALTH
+          - BIND_ARMORPIECE
+          - STRIKE_LIGHTNING
+          - EFFECT_CONFUSION
+          - EFFECT_HUNGER
+          - EFFECT_SLOW
+          - EFFECT_WITHER
+
+
+  group-bad-offer:
+
+    items:
+      - BAMBOO
+      - BEEF
+      - BEETROOT_SEEDS
+      - CARROT
+      - CHARCOAL
+      - CHICKEN
+      - COAL
+      - DRIED_KELP
+      - EGG
+      - FLINT
+      - GOLD_NUGGET
+      - IRON_NUGGET
+      - KELP
+      - LEATHER
+      - MELON_SEEDS
+      - MELON_SLICE
+      - MUTTON
+      - PAPER
+      - PORKCHOP
+      - POTATO
+      - PUMPKIN_SEEDS
+      - RABBIT_HIDE
+      - SAND
+      - SLIME_BALL
+      - STRING
+      - SUGAR
+      - SUGAR_CANE
+      - SWEET_BERRIES
+      - TORCH
+      - WHEAT
+
+    actions:
+      strong-bless:
+        weight: 10
+        outcomes:
+          - ENTITY_CHICKEN
+          - EFFECT_SPEED
+
+      weak-bless:
+        weight: 25
+        outcomes:
+          - ITEM_IRON_INGOT
+
+      ignore:
+        weight: 20
+        outcomes:
+
+      weak-curse:
+        weight: 30
+        outcomes:
+          - EFFECT_WITHER
+          - EFFECT_BLINDNESS
+          - EFFECT_SLOW
+
+      strong-curse:
+        weight: 15
+        outcomes:
+          - DECREASE_HEALTH
+          - BIND_ARMORPIECE
+          - STRIKE_LIGHTNING
+
+
+
+  group-trash:
+
+    items:
+      - ANDESITE
+      - ARROW
+      - BONES
+      - BONE_MEAL
+      - COBBLESTONE
+      - COBWEB
+      - DEAD_BUSH
+      - DIORITE
+      - DIRT
+      - FEATHER
+      - GRANITE
+      - INK_SAC
+      - NETHERRACK
+      - PHANTOM_MEMBRANE
+      - POISONOUS_POTATO
+      - ROTTEN_FLESH
+      - SPIDER_EYE
+      - STICK
+      - WHEAT_SEEDS
+
+    actions:
+      strong-bless:
+        weight: 5
+        outcomes:
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+
+      weak-bless:
+        weight: 10
+        outcomes:
+          - ITEM_IRON_INGOT
+
+      ignore:
+        weight: 10
+        outcomes:
+          - EFFECT_SPEED
+
+      weak-curse:
+        weight: 60
+        outcomes:
+          - ENTITY_ZOMBIE
+          - ENTITY_ZOMBIE
+          - ENTITY_ZOMBIE
+          - BIND_ARMORPIECE
+          - STRIKE_LIGHTNING
+          - EFFECT_BLINDNESS
+          - EFFECT_SLOW
+
+      strong-curse:
+        weight: 15
+        outcomes:
+          - DECREASE_HEALTH
+          - DECREASE_HEALTH
+          - BIND_ARMORPIECE
+          - BIND_ARMORPIECE
+          - ENTITY_ZOMBIE
+          - ENTITY_ZOMBIE
+          - ENTITY_ZOMBIE
+          - ENTITY_CREEPER
+          - STRIKE_LIGHTNING
+          - EFFECT_BLINDNESS
+          - EFFECT_SLOW
+
+
+
+  group-enchantable-equipment:
+
+    items:
+      - BOW
+      - CHAINMAIL_BOOTS
+      - CHAINMAIL_CHESTPLATE
+      - CHAINMAIL_HELMET
+      - CHAINMAIL_LEGGINGS
+      - CROSSBOW
+      - DIAMOND_AXE
+      - DIAMOND_BOOTS
+      - DIAMOND_CHESTPLATE
+      - DIAMOND_HELMET
+      - DIAMOND_HOE
+      - DIAMOND_LEGGINGS
+      - DIAMOND_PICKAXE
+      - DIAMOND_SHOVEL
+      - DIAMOND_SWORD
+      - ENCHANTED_BOOK
+      - FISHING_ROD
+      - FLINT_AND_STEEL
+      - GOLDEN_AXE
+      - GOLDEN_BOOTS
+      - GOLDEN_CHESTPLATE
+      - GOLDEN_HELMET
+      - GOLDEN_HOE
+      - GOLDEN_LEGGINGS
+      - GOLDEN_PICKAXE
+      - GOLDEN_SHOVEL
+      - GOLDEN_SWORD
+      - IRON_AXE
+      - IRON_BOOTS
+      - IRON_CHESTPLATE
+      - IRON_HELMET
+      - IRON_HOE
+      - IRON_LEGGINGS
+      - IRON_PICKAXE
+      - IRON_SHOVEL
+      - IRON_SWORD
+      - LEATHER_BOOTS
+      - LEATHER_CHESTPLATE
+      - LEATHER_HELMET
+      - LEATHER_LEGGINGS
+      - NETHERITE_AXE
+      - NETHERITE_BOOTS
+      - NETHERITE_CHESTPLATE
+      - NETHERITE_HELMET
+      - NETHERITE_HOE
+      - NETHERITE_LEGGINGS
+      - NETHERITE_PICKAXE
+      - NETHERITE_SHOVEL
+      - NETHERITE_SWORD
+      - POTION
+      - SHEARS
+      - SHIELD
+      - SPLASH_POTION
+      - TURTLE_HELMET
+
+    actions:
+      strong-bless:
+        weight: 15
+        outcomes:
+          - DOUBLE_ITEM
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+
+      weak-bless:
+        weight: 30
+        outcomes:
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+
+      ignore:
+        weight: 10
+        outcomes:
+
+      weak-curse:
+        weight: 30
+        outcomes:
+          - EFFECT_WITHER
+
+      strong-curse:
+        weight: 15
+        outcomes:
+          - EFFECT_HUNGER
+          - EFFECT_WITHER
+          - BIND_ARMORPIECE
+          - STRIKE_LIGHTNING
+
+
+
+  group-shulker-boxes:
+
+    items:
+      - SHULKER_BOX
+      - WHITE_SHULKER_BOX
+      - ORANGE_SHULKER_BOX
+      - MAGENTA_SHULKER_BOX
+      - LIGHT_BLUE_SHULKER_BOX
+      - YELLOW_SHULKER_BOX
+      - LIME_SHULKER_BOX
+      - PINK_SHULKER_BOX
+      - GRAY_SHULKER_BOX
+      - LIGHT_GRAY_SHULKER_BOX
+      - CYAN_SHULKER_BOX
+      - PURPLE_SHULKER_BOX
+      - BLUE_SHULKER_BOX
+      - BROWN_SHULKER_BOX
+      - GREEN_SHULKER_BOX
+      - RED_SHULKER_BOX
+      - BLACK_SHULKER_BOX
+
+    actions:
+      strong-bless:
+        weight: 15
+        outcomes:
+          - DOUBLE_ITEM
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+
+      weak-bless:
+        weight: 30
+        outcomes:
+          - ITEM_DIAMOND_BLOCK
+          - EFFECT_REGENERATION
+          - EFFECT_SATURATION
+          - EFFECT_SPEED
+
+      ignore:
+        weight: 10
+        outcomes:
+
+      weak-curse:
+        weight: 30
+        outcomes:
+          - EFFECT_WITHER
+          - STRIKE_LIGHTNING
+
+      strong-curse:
+        weight: 15
+        outcomes:
+          - DECREASE_HEALTH
+          - STRIKE_LIGHTNING
+          - BIND_ARMORPIECE
+
+
+
+  group-default: # This is a special group. If an item doesn't fall into any configured group, it will use this one.
+
+    actions:
+      strong-bless:
+        weight: 0
+        outcomes:
+
+      weak-bless:
+        weight: 20
+        outcomes:
+          - EFFECT_SPEED
+
+      ignore:
+        weight: 70
+        outcomes:
+
+      weak-curse:
+        weight: 20
+        outcomes:
+          - EFFECT_SLOW
+
+      strong-curse:
+        weight: 0
+        outcomes:
