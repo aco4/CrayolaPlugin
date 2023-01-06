@@ -5,8 +5,6 @@ api-version: 1.19
 author: Crayola#2819
 description: Adds the ability to pray, offer items, and be blessed/cursed!
 commands:
-#  parrot:
-#    description: Repeats what you type
   remindme:
     description: Reminds you after a set time
   crayolapluginconfigreload:

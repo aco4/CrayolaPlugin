@@ -7,7 +7,6 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         // Register each of the following commands (set an instance of each command's class as executor)
-//        this.getCommand("parrot").setExecutor(new CommandParrot());
 //        this.getCommand("gettime").setExecutor(new CommandGetTime());
         this.getCommand("remindme").setExecutor(new CommandRemindMe());
         this.getCommand("crayolapluginconfigreload").setExecutor(new CommandCrayolaPluginConfigReload());
