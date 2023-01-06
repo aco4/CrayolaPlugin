@@ -42,12 +42,16 @@ public class CommandRemindMe implements CommandExecutor {
                 switch (args[1]) {
                     case "second":
                     case "seconds":
+                    case "sec":
+                    case "s":
                         timeUnit = 20L;
                         delay = timeUnit * time;
                         remindTime = now.plus(time, ChronoUnit.SECONDS);
                         break;
                     case "minute":
                     case "minutes":
+                    case "min":
+                    case "m":
                         timeUnit = 1200L;
                         delay = timeUnit * time;
                         remindTime = now.plus(time, ChronoUnit.MINUTES);
