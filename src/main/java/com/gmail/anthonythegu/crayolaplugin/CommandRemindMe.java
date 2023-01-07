@@ -78,7 +78,7 @@ public class CommandRemindMe implements CommandExecutor {
 
             // Send reminder with message, if given
             if (hasMessage) {
-                sender.sendMessage("You have been reminded for " + fMessage);
+                sender.sendMessage("You have been reminded: " + fMessage);
             } else {
                 sender.sendMessage("You have been reminded!");
             }

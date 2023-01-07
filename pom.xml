@@ -6,7 +6,7 @@
 
     <groupId>com.gmail.anthonythegu</groupId>
     <artifactId>CrayolaPlugin</artifactId>
-    <version>0.10.18</version>
+    <version>0.10.19</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

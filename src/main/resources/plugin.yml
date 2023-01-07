@@ -1,6 +1,6 @@
 name: CrayolaPlugin
 main: com.gmail.anthonythegu.crayolaplugin.Main
-version: 0.10.18
+version: 0.10.19
 api-version: 1.19
 author: Crayola#2819
 description: Adds the ability to pray, offer items, and be blessed/cursed!
